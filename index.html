@@ -1,10 +1,499 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Hola</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A weekly training system built for heart health and joints that last.">
+<meta name="theme-color" content="#06080f">
+<meta name="color-scheme" content="dark">
+<title>Training Blueprint</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fb7185' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z'/%3E%3Cpath d='M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06080f;
+  --surface: #0d111c;
+  --surface-2: #121828;
+  --line: #1e2638;
+  --text: #e7ebf5;
+  --muted: #8a94ab;
+  --soft: #b9c2d6;
+  --strength: #38bdf8;
+  --cardio: #fb7185;
+  --recovery: #a3e635;
+  --accent: #fbbf24;
+  --radius: 18px;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: max(28px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(56px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  color: var(--text);
+  font: 15px/1.55 Inter, system-ui, -apple-system, sans-serif;
+  background:
+    radial-gradient(900px 420px at 0% -10%, rgb(56 189 248 / .13), transparent 60%),
+    radial-gradient(700px 400px at 100% 0%, rgb(251 113 133 / .10), transparent 60%),
+    linear-gradient(rgb(130 160 220 / .05) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, rgb(130 160 220 / .05) 1px, transparent 1px) 0 0 / 28px 28px,
+    var(--bg);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 12px; }
+
+.wrap { max-width: 1040px; margin: 0 auto; }
+
+.ic {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Header */
+.hero { display: flex; gap: 16px; align-items: center; margin-bottom: 24px; }
+.logo {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  font-size: 30px;
+  color: var(--cardio);
+  background: linear-gradient(145deg, rgb(251 113 133 / .25), rgb(56 189 248 / .12));
+  border: 1px solid rgb(251 113 133 / .35);
+  box-shadow: 0 0 40px rgb(251 113 133 / .22);
+}
+.logo .ic { animation: beat 1.6s ease-in-out infinite; }
+@keyframes beat { 0%, 30%, 100% { transform: scale(1); } 15% { transform: scale(1.12); } }
+h1 { margin: 0; font-size: clamp(28px, 6vw, 44px); line-height: 1.05; font-weight: 800; letter-spacing: -1.2px; }
+.lead { margin: 4px 0 0; color: var(--muted); }
+
+/* Sections */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 34px 0 12px;
+  font: 500 12px var(--mono);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* Mood */
+.mood h2 { display: flex; gap: 8px; align-items: center; margin: 0 0 12px; font-size: 15px; font-weight: 600; }
+.mood h2 .ic { color: var(--accent); }
+.moods { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.mood-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 84px;
+  padding: 14px 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  transition: border-color .2s, background .2s, color .2s;
+}
+.mood-btn .ic { font-size: 26px; color: var(--text); }
+.mood-btn[aria-pressed="true"] { color: var(--text); border-color: var(--accent); background: rgb(251 191 36 / .08); }
+.mood-btn[aria-pressed="true"] .ic { color: var(--accent); }
+.pick { margin: 12px 0 0; min-height: 22px; font-size: 14px; color: var(--muted); }
+.pick b { color: var(--accent); font-weight: 600; }
+
+/* Expandable */
+.toggle { display: flex; align-items: center; gap: 14px; width: 100%; }
+.chev { margin-left: auto; font-size: 18px; color: var(--muted); transition: transform .25s; }
+[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
+.open > .body { grid-template-rows: 1fr; }
+.body > div { overflow: hidden; }
+
+/* Sessions */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; align-items: start; }
+.card {
+  --a: var(--strength);
+  position: relative;
+  overflow: hidden;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  transition: opacity .25s, box-shadow .25s, border-color .25s;
+}
+.card.cardio { --a: var(--cardio); }
+.card.recovery { --a: var(--recovery); }
+.card::after {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--a) 20%, transparent), transparent 70%);
+  pointer-events: none;
+}
+.card.match { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 10px 40px rgb(251 191 36 / .12); }
+.card.fade { opacity: .32; }
+.tile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  font-size: 26px;
+  color: var(--a);
+  background: color-mix(in srgb, var(--a) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--a) 30%, transparent);
+}
+.card .toggle { position: relative; z-index: 1; }
+.card small { display: block; font: 500 11px var(--mono); letter-spacing: 1.2px; text-transform: uppercase; color: var(--a); }
+.card strong { display: block; font-size: 17px; font-weight: 600; line-height: 1.25; }
+.meter { display: flex; gap: 3px; margin-top: 7px; }
+.meter i { width: 12px; height: 5px; border-radius: 2px; background: var(--line); }
+.meter i.on { background: var(--a); }
+.detail { position: relative; z-index: 1; padding-top: 14px; font-size: 14px; }
+.detail ul { margin: 0; padding: 0; list-style: none; }
+.detail li { position: relative; padding: 5px 0 5px 16px; border-bottom: 1px dashed var(--line); }
+.detail li::before { content: ""; position: absolute; left: 0; top: 13px; width: 6px; height: 6px; border-radius: 2px; background: var(--a); }
+.examples { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--a) 8%, transparent); }
+.examples span { display: block; margin-bottom: 2px; font: 500 10px var(--mono); letter-spacing: 1.5px; color: var(--a); }
+.examples p { margin: 0; color: var(--text); }
+.why { margin: 12px 0 0; color: var(--soft); }
+.tag { display: inline-flex; gap: 6px; align-items: center; margin-top: 10px; font: 500 11px var(--mono); }
+.tag.ok { color: var(--recovery); }
+.tag.no { color: var(--cardio); }
+
+/* Rules and habits */
+.split { display: grid; grid-template-columns: 1.35fr 1fr; gap: 12px; }
+.rule { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.rule:first-child { padding-top: 0; }
+.rule:last-child { padding-bottom: 0; border: 0; }
+.rule .tile { --a: var(--accent); width: 36px; height: 36px; border-radius: 11px; font-size: 18px; }
+.rule b { display: block; font-size: 14px; font-weight: 600; }
+.rule span { font-size: 13px; color: var(--muted); }
+.habits { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; }
+.habit { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2); }
+.habit .ic { font-size: 22px; color: var(--strength); }
+.habit b { display: block; margin-top: 6px; font-size: 21px; font-weight: 800; }
+.habit small { color: var(--muted); font-size: 12px; }
+
+/* Tips */
+.tabs { display: flex; gap: 8px; margin: 0 -16px 12px; padding: 0 16px; overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  flex: none;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.tab[aria-selected="true"] { color: var(--text); border-color: #3a4560; background: var(--surface-2); }
+.tips { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; align-items: start; }
+.tip { padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.tip .tile { --a: var(--strength); width: 36px; height: 36px; border-radius: 11px; font-size: 18px; }
+.tip strong { font-size: 14px; font-weight: 600; }
+.tip p { margin: 0; padding: 10px 0 0 50px; font-size: 13px; color: var(--soft); }
+
+@media (max-width: 760px) {
+  .moods { grid-template-columns: repeat(2, 1fr); }
+  .split { grid-template-columns: 1fr; }
+  .grid, .tips { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
 </head>
 <body>
-  <h1>Hi</h1>
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="position:absolute;width:0;height:0">
+  <symbol id="i-pullup" viewBox="0 0 24 24"><path d="M2 3h20M6.5 3l3 6M17.5 3l-3 6M9.5 10.5h5M12 10.5V16m0 0-2 5m2-5 2 5"/><circle cx="12" cy="7.5" r="2"/></symbol>
+  <symbol id="i-bench" viewBox="0 0 24 24"><path d="M2 6h20M4.5 3.5v5M19.5 3.5v5M9 6v4M15 6v4M4 13h16M7 13v7M17 13v7"/></symbol>
+  <symbol id="i-barbell" viewBox="0 0 24 24"><path d="M1.5 12h21M8.5 8.5v7M15.5 8.5v7"/><rect x="4" y="6" width="3" height="12" rx="1"/><rect x="17" y="6" width="3" height="12" rx="1"/></symbol>
+  <symbol id="i-kettlebell" viewBox="0 0 24 24"><circle cx="12" cy="15" r="6"/><path d="M8.6 10.1 8 6a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1l-.6 4.1"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></symbol>
+  <symbol id="i-feet" viewBox="0 0 24 24"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0ZM20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0ZM16 17h4M4 13h4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+  <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></symbol>
+  <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2" y="7" width="16" height="10" rx="2"/><path d="M22 11v2M6 11v2"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-arrows" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"/></symbol>
+  <symbol id="i-separate" viewBox="0 0 24 24"><rect x="2" y="5" width="7" height="14" rx="2"/><rect x="15" y="5" width="7" height="14" rx="2"/><path d="M12 3v18" stroke-dasharray="2 3"/></symbol>
+  <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="m12 14 4-4M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+  <symbol id="i-bed" viewBox="0 0 24 24"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></symbol>
+  <symbol id="i-racket" viewBox="0 0 24 24"><circle cx="10" cy="9" r="6.5"/><path d="M14.6 13.6 20 19M8 7h.01M12 7h.01M10 10h.01M8 12h.01M12 12h.01"/><circle cx="20" cy="4" r="1.6"/></symbol>
+  <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8M21 3v5h-5"/></symbol>
+  <symbol id="i-bone" viewBox="0 0 24 24"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="i-egg" viewBox="0 0 24 24"><path d="M12 22c4 0 7-3 7-7.5C19 8 15.5 2 12 2S5 8 5 14.5C5 19 8 22 12 22Z"/></symbol>
+  <symbol id="i-trees" viewBox="0 0 24 24"><path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0ZM7 16v6M13 19v3M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+</svg>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="logo"><svg class="ic" aria-hidden="true"><use href="#i-heart"/></svg></div>
+    <div>
+      <h1>Training Blueprint</h1>
+      <p class="lead">Heart first. Joints for life. Pick a session by how you feel.</p>
+    </div>
+  </header>
+
+  <section class="panel mood" aria-labelledby="mood-title">
+    <h2 id="mood-title"><svg class="ic" aria-hidden="true"><use href="#i-pulse"/></svg>How do you feel today?</h2>
+    <div class="moods" id="moods"></div>
+    <p class="pick" id="pick" aria-live="polite"></p>
+  </section>
+
+  <h2 class="label">Sessions</h2>
+  <div class="grid" id="sessions"></div>
+
+  <h2 class="label">Rules</h2>
+  <div class="split">
+    <div class="panel" id="rules"></div>
+    <div class="habits" id="habits"></div>
+  </div>
+
+  <h2 class="label">Remember</h2>
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="tips" id="tips"></div>
+</main>
+
+<script>
+const sessions = [
+  {
+    name: 'Back + lower back', type: 'strength', icon: 'pullup', load: 4, time: '60 min', park: true, moods: ['fresh', 'normal'],
+    steps: ['Vertical pull', 'Horizontal pull', 'One hinge: RDL or deadlift', 'Back extensions', 'Core, 10 min'],
+    examples: ['Pull-ups 4 × 6–8', 'Romanian deadlift 3 × 8'],
+    why: 'Pulling balances all the pressing and padel swings. The hinge builds a strong lower back.'
+  },
+  {
+    name: 'Chest + biceps', type: 'strength', icon: 'bench', load: 4, time: '60 min', park: true, moods: ['normal', 'sore'],
+    steps: ['Flat press', 'Incline press', 'Dips or fly', 'Biceps, two exercises', 'Core, 10 min'],
+    examples: ['Bench press 4 × 6–8', 'Incline curls 3 × 10'],
+    why: 'Presses already train the triceps, so the biceps get the direct work here.'
+  },
+  {
+    name: 'Legs', type: 'strength', icon: 'barbell', load: 5, time: '70 min', park: false, moods: ['fresh'],
+    steps: ['Squat, heavy and clean', 'Single leg: split squat or step-down', 'Nordic hamstring curls', 'Slow, heavy calf raises', 'Copenhagen plank'],
+    examples: ['Back squat 4 × 5', 'Nordic curls 3 × 5'],
+    why: 'Your knee insurance. Nordics and Copenhagen planks cut hamstring and groin injuries a lot.'
+  },
+  {
+    name: 'Shoulders + triceps + grip', type: 'strength', icon: 'kettlebell', load: 3, time: '55 min', park: true, moods: ['normal', 'sore'],
+    steps: ['Overhead press', 'Lateral raises, rear delts', 'Triceps, two exercises', 'Wrists, hangs, carries', 'Core, 10 min'],
+    examples: ['Overhead press 4 × 6–8', 'Farmer carry 3 × 40 m'],
+    why: 'Rear delts and forearms protect the padel shoulder and elbow.'
+  },
+  {
+    name: 'Intervals', type: 'cardio', icon: 'heart', load: 4, time: '45 min', moods: ['fresh'],
+    steps: ['10 min easy warm-up', '4 × 4 min hard, 3 min easy between', '5–10 min cool-down', 'Calf raises, tibialis raises, single-leg balance'],
+    examples: ['Run 4 × 4 min', 'Bike or rower, same plan, less impact'],
+    why: 'The heart engine. Hard means 85–95% of max heart rate. You can only say a few words.'
+  },
+  {
+    name: 'Long easy', type: 'cardio', icon: 'feet', load: 2, time: '45–75 min', moods: ['normal', 'tired', 'sore'],
+    steps: ['Easy pace the whole time', 'Run, walk-run, bike, swim or hike'],
+    examples: ['60 min easy run or walk-run', '45 min swim or bike'],
+    why: 'The base. Easy means below about 70% of max heart rate. You can talk in full sentences.'
+  },
+  {
+    name: 'Rest + mobility', type: 'recovery', icon: 'moon', load: 1, time: '30 min', moods: ['tired', 'sore'],
+    steps: ['No training. Walking is fine.', 'Slow mobility: ankles, hips, upper back, shoulders'],
+    examples: ['Deep squat hold 3 × 1 min', 'Dead hang 3 × 30 s'],
+    why: 'Fitness grows during recovery, not during training.'
+  }
+];
+
+const moods = [
+  { id: 'fresh', icon: 'zap', label: 'Full energy' },
+  { id: 'normal', icon: 'smile', label: 'Normal' },
+  { id: 'tired', icon: 'battery', label: 'Tired' },
+  { id: 'sore', icon: 'flame', label: 'Sore legs' }
+];
+
+const rules = [
+  { icon: 'arrows', title: '2+ days between Back and Legs', text: 'Both load the lower back.' },
+  { icon: 'separate', title: 'Chest and Shoulders not back to back', text: 'Presses tire the front of the shoulder.' },
+  { icon: 'ban', title: 'No Intervals the day after Legs or padel', text: 'Tired legs raise the risk of strains.' },
+  { icon: 'gauge', title: 'Max two hard days in a row', text: 'Padel counts as hard. Then easy or rest.' },
+  { icon: 'bed', title: 'One full rest day every week', text: 'No training. A walk is fine.' },
+  { icon: 'racket', title: 'Padel twice this week?', text: 'Skip Long easy. Keep Intervals.' }
+];
+
+const habits = [
+  { icon: 'rotate', value: '10 min', label: 'mobility, daily' },
+  { icon: 'feet', value: '8–10k', label: 'steps, daily' },
+  { icon: 'moon', value: '7–9 h', label: 'sleep' },
+  { icon: 'egg', value: '1.6 g/kg', label: 'protein, daily' }
+];
+
+const topics = {
+  knees: { icon: 'bone', label: 'Knees' },
+  run: { icon: 'feet', label: 'Running' },
+  heart: { icon: 'heart', label: 'Heart' },
+  mobility: { icon: 'rotate', label: 'Mobility' },
+  padel: { icon: 'racket', label: 'Padel' },
+  recovery: { icon: 'repeat', label: 'Recovery' }
+};
+
+const tips = [
+  { topic: 'knees', title: 'Strength protects joints', text: 'Strength training cuts sports injuries by about two thirds. Stretching alone shows no clear effect.' },
+  { topic: 'knees', title: 'Free your ankles', text: 'Stiff ankles send stress up into the knee.' },
+  { topic: 'knees', title: 'Knees over toes is fine', text: 'With control, it is normal and needed in padel. Train it, do not avoid it.' },
+  { topic: 'knees', title: 'The 3/10 pain rule', text: 'Pain up to 3 out of 10 is OK if it is gone the next morning. Worse the next day? Do less.' },
+  { topic: 'run', title: 'Running is good for knees', text: 'Normal runners get less knee arthritis than people who do not exercise.' },
+  { topic: 'run', title: 'Restart slowly', text: 'After a break, start with 20–30 min easy. Add about 10% per week. Tendons adapt slower than muscles.' },
+  { topic: 'run', title: 'Shorter, quicker steps', text: '5–10% more steps per minute means less load on the knee.' },
+  { topic: 'run', title: 'Avoid the middle', text: 'Most people run every run kind of hard. Make easy days easier and hard days harder.' },
+  { topic: 'heart', title: 'Know your real max', text: 'Use the highest heart rate from a real hard effort. "220 minus age" is often wrong by 10+ beats.' },
+  { topic: 'heart', title: 'Walking is the base, not the workout', text: 'Lots of easy movement is great. But VO2max only goes up with hard work, so keep the Intervals.' },
+  { topic: 'heart', title: 'Measure it', text: 'Retest a 5k or one interval session every 8–12 weeks.' },
+  { topic: 'heart', title: 'Check the basics', text: 'Blood pressure and blood lipids (ApoB) every 1–2 years.' },
+  { topic: 'mobility', title: 'Daily 10 minutes', text: 'Ankle rocks, 90/90 hips, open books for the upper back, wrist circles, dead hang.' },
+  { topic: 'mobility', title: 'Strength through full range', text: 'Deep squats, split squats and slow full reps build mobility you can actually use.' },
+  { topic: 'mobility', title: 'Stretch at the right time', text: 'Before training, keep it moving. Long holds go after training or in the evening.' },
+  { topic: 'mobility', title: 'Padel is one-sided', text: 'Rotate and stretch both sides. Train the weak side too.' },
+  { topic: 'padel', title: 'Warm up 10 minutes', text: 'Most padel injuries happen when cold: calf, ankle, elbow.' },
+  { topic: 'padel', title: 'Strong forearms', text: 'Wrist and grip work protects the elbow.' },
+  { topic: 'recovery', title: 'Same sleep times', text: 'Go to bed and wake up within about 30 min every day. Regular sleep matters as much as long sleep.' },
+  { topic: 'recovery', title: 'Break long sitting', text: 'Stand up and move every 30–60 min. It helps blood sugar and the back.' },
+  { topic: 'recovery', title: 'Steady, not spiky', text: 'Big jumps after quiet weeks raise injury risk. Keep weekly load similar.' },
+  { topic: 'recovery', title: 'HRV is a trend', text: 'Judge it over 7 days, not one morning.' },
+  { topic: 'recovery', title: 'Easy week every 5–6 weeks', text: 'Same sessions, half the sets.' },
+  { topic: 'recovery', title: 'Busy week minimum', text: 'Legs, one upper day, Intervals, Long easy. This keeps most of the benefit.' }
+];
+
+const TYPES = { strength: 'Strength', cardio: 'Cardio', recovery: 'Recovery' };
+const $ = (selector) => document.querySelector(selector);
+const icon = (name) => `<svg class="ic" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+const meter = (load) => `<span class="meter" aria-label="Load ${load} of 5">${[1, 2, 3, 4, 5].map((n) => `<i class="${n <= load ? 'on' : ''}"></i>`).join('')}</span>`;
+
+function parkTag(park) {
+  if (park === undefined) return '';
+  return park
+    ? `<span class="tag ok">${icon('trees')}Park workout OK</span>`
+    : `<span class="tag no">${icon('x')}Gym only</span>`;
+}
+
+function expandable(id, head, body) {
+  return `
+    <button class="toggle" aria-expanded="false" aria-controls="${id}">${head}<span class="chev">${icon('chev')}</span></button>
+    <div class="body" id="${id}" inert><div>${body}</div></div>`;
+}
+
+function renderSessions() {
+  $('#sessions').innerHTML = sessions.map((s, i) => `
+    <article class="card ${s.type}" data-moods="${s.moods.join(' ')}">
+      ${expandable(`session-${i}`, `
+        <span class="tile">${icon(s.icon)}</span>
+        <span><small>${TYPES[s.type]} · ${s.time}</small><strong>${s.name}</strong>${meter(s.load)}</span>`, `
+        <div class="detail">
+          <ul>${s.steps.map((step) => `<li>${step}</li>`).join('')}</ul>
+          <div class="examples"><span>EXAMPLE</span>${s.examples.map((e) => `<p>${e}</p>`).join('')}</div>
+          <p class="why">${s.why}</p>
+          ${parkTag(s.park)}
+        </div>`)}
+    </article>`).join('');
+}
+
+function renderTips(topic = 'all') {
+  $('#tips').innerHTML = tips
+    .filter((t) => topic === 'all' || t.topic === topic)
+    .map((t, i) => `
+      <article class="tip">
+        ${expandable(`tip-${i}`, `<span class="tile">${icon(topics[t.topic].icon)}</span><strong>${t.title}</strong>`, `<p>${t.text}</p>`)}
+      </article>`).join('');
+}
+
+function setMood(id) {
+  document.querySelectorAll('.mood-btn').forEach((b) => b.setAttribute('aria-pressed', b.dataset.mood === id));
+  document.querySelectorAll('.card').forEach((card) => {
+    const match = Boolean(id) && card.dataset.moods.split(' ').includes(id);
+    card.classList.toggle('match', match);
+    card.classList.toggle('fade', Boolean(id) && !match);
+  });
+  const picks = sessions.filter((s) => s.moods.includes(id)).map((s) => s.name);
+  $('#pick').innerHTML = id ? `Good today: <b>${picks.join(' · ')}</b>` : 'Tap one. Matching sessions light up.';
+}
+
+$('#moods').innerHTML = moods.map((m) => `<button class="mood-btn" data-mood="${m.id}" aria-pressed="false">${icon(m.icon)}${m.label}</button>`).join('');
+$('#rules').innerHTML = rules.map((r) => `<div class="rule"><span class="tile">${icon(r.icon)}</span><div><b>${r.title}</b><span>${r.text}</span></div></div>`).join('');
+$('#habits').innerHTML = habits.map((h) => `<div class="habit">${icon(h.icon)}<b>${h.value}</b><small>${h.label}</small></div>`).join('');
+$('#tabs').innerHTML = [['all', 'grid', 'All'], ...Object.entries(topics).map(([k, t]) => [k, t.icon, t.label])]
+  .map(([k, ic, label], i) => `<button class="tab" role="tab" data-topic="${k}" aria-selected="${i === 0}">${k === 'all' ? '' : icon(ic)}${label}</button>`).join('');
+
+renderSessions();
+renderTips();
+setMood(null);
+
+let mood = null;
+$('#moods').addEventListener('click', (e) => {
+  const btn = e.target.closest('.mood-btn');
+  if (!btn) return;
+  mood = mood === btn.dataset.mood ? null : btn.dataset.mood;
+  setMood(mood);
+});
+
+$('#tabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t === tab));
+  renderTips(tab.dataset.topic);
+});
+
+document.addEventListener('click', (e) => {
+  const toggle = e.target.closest('.toggle');
+  if (!toggle) return;
+  const open = toggle.getAttribute('aria-expanded') !== 'true';
+  toggle.setAttribute('aria-expanded', open);
+  toggle.parentElement.classList.toggle('open', open);
+  document.getElementById(toggle.getAttribute('aria-controls')).inert = !open;
+});
+</script>
 </body>
 </html>
