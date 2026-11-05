@@ -212,32 +212,23 @@ h1 { margin: 0; font-size: clamp(28px, 6vw, 44px); line-height: 1.05; font-weigh
 .habit b { display: block; margin-top: 6px; font-size: 21px; font-weight: 800; }
 .habit small { color: var(--muted); font-size: 12px; }
 
-/* Tips */
-.tabs { display: flex; gap: 8px; margin: 0 -16px 12px; padding: 0 16px; overflow-x: auto; scrollbar-width: none; }
-.tabs::-webkit-scrollbar { display: none; }
-.tab {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  flex: none;
-  min-height: 36px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 99px;
-  font-size: 13px;
-  color: var(--muted);
-}
-.tab[aria-selected="true"] { color: var(--text); border-color: #3a4560; background: var(--surface-2); }
-.tips { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; align-items: start; }
-.tip { padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
-.tip .tile { --a: var(--strength); width: 36px; height: 36px; border-radius: 11px; font-size: 18px; }
-.tip strong { font-size: 14px; font-weight: 600; }
-.tip p { margin: 0; padding: 10px 0 0 50px; font-size: 13px; color: var(--soft); }
+.step { position: absolute; top: 14px; right: 46px; z-index: 1; font: 500 11px var(--mono); color: var(--muted); }
+
+/* Remember */
+.notes { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; align-items: start; }
+.note { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.note .tile { --a: var(--accent); width: 42px; height: 42px; border-radius: 12px; font-size: 21px; }
+.note strong { display: block; font-size: 16px; font-weight: 600; }
+.note small { color: var(--muted); font-size: 12px; }
+.note ul { margin: 0; padding: 12px 0 0; list-style: none; }
+.note li { padding: 9px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.note li b { display: block; font-weight: 600; }
+.note li span { color: var(--soft); }
 
 @media (max-width: 760px) {
   .moods { grid-template-columns: repeat(2, 1fr); }
   .split { grid-template-columns: 1fr; }
-  .grid, .tips { grid-template-columns: 1fr; }
+  .grid, .notes { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -289,18 +280,17 @@ h1 { margin: 0; font-size: clamp(28px, 6vw, 44px); line-height: 1.05; font-weigh
     <p class="pick" id="pick" aria-live="polite"></p>
   </section>
 
-  <h2 class="label">Sessions</h2>
+  <h2 class="label">Sessions · in order</h2>
   <div class="grid" id="sessions"></div>
+
+  <h2 class="label">Remember</h2>
+  <div class="notes" id="notes"></div>
 
   <h2 class="label">Rules</h2>
   <div class="split">
     <div class="panel" id="rules"></div>
     <div class="habits" id="habits"></div>
   </div>
-
-  <h2 class="label">Remember</h2>
-  <div class="tabs" id="tabs" role="tablist"></div>
-  <div class="tips" id="tips"></div>
 </main>
 
 <script>
@@ -312,16 +302,10 @@ const sessions = [
     why: 'Pulling balances all the pressing and padel swings. The hinge builds a strong lower back.'
   },
   {
-    name: 'Chest + biceps', type: 'strength', icon: 'bench', load: 4, time: '60 min', park: true, moods: ['normal', 'sore'],
-    steps: ['Flat press', 'Incline press', 'Dips or fly', 'Biceps, two exercises', 'Core, 10 min'],
-    examples: ['Bench press 4 × 6–8', 'Incline curls 3 × 10'],
-    why: 'Presses already train the triceps, so the biceps get the direct work here.'
-  },
-  {
-    name: 'Legs', type: 'strength', icon: 'barbell', load: 5, time: '70 min', park: false, moods: ['fresh'],
-    steps: ['Squat, heavy and clean', 'Single leg: split squat or step-down', 'Nordic hamstring curls', 'Slow, heavy calf raises', 'Copenhagen plank'],
-    examples: ['Back squat 4 × 5', 'Nordic curls 3 × 5'],
-    why: 'Your knee insurance. Nordics and Copenhagen planks cut hamstring and groin injuries a lot.'
+    name: 'Intervals', type: 'cardio', icon: 'heart', load: 4, time: '45 min', moods: ['fresh'],
+    steps: ['10 min easy warm-up', '4 × 4 min hard, 3 min easy between', '5–10 min cool-down', 'Calf raises, tibialis raises, single-leg balance'],
+    examples: ['Run 4 × 4 min', 'Bike or rower, same plan, less impact'],
+    why: 'The heart engine. Hard means 85–95% of max heart rate. You can only say a few words.'
   },
   {
     name: 'Shoulders + triceps + grip', type: 'strength', icon: 'kettlebell', load: 3, time: '55 min', park: true, moods: ['normal', 'sore'],
@@ -330,10 +314,16 @@ const sessions = [
     why: 'Rear delts and forearms protect the padel shoulder and elbow.'
   },
   {
-    name: 'Intervals', type: 'cardio', icon: 'heart', load: 4, time: '45 min', moods: ['fresh'],
-    steps: ['10 min easy warm-up', '4 × 4 min hard, 3 min easy between', '5–10 min cool-down', 'Calf raises, tibialis raises, single-leg balance'],
-    examples: ['Run 4 × 4 min', 'Bike or rower, same plan, less impact'],
-    why: 'The heart engine. Hard means 85–95% of max heart rate. You can only say a few words.'
+    name: 'Legs', type: 'strength', icon: 'barbell', load: 5, time: '70 min', park: false, moods: ['fresh'],
+    steps: ['Squat, heavy and clean', 'Single leg: split squat or step-down', 'Nordic hamstring curls', 'Slow, heavy calf raises', 'Copenhagen plank'],
+    examples: ['Back squat 4 × 5', 'Nordic curls 3 × 5'],
+    why: 'Your knee insurance. Nordics and Copenhagen planks cut hamstring and groin injuries a lot.'
+  },
+  {
+    name: 'Chest + biceps', type: 'strength', icon: 'bench', load: 4, time: '60 min', park: true, moods: ['normal', 'sore'],
+    steps: ['Flat press', 'Incline press', 'Dips or fly', 'Biceps, two exercises', 'Core, 10 min'],
+    examples: ['Bench press 4 × 6–8', 'Incline curls 3 × 10'],
+    why: 'Presses already train the triceps, so the biceps get the direct work here.'
   },
   {
     name: 'Long easy', type: 'cardio', icon: 'feet', load: 2, time: '45–75 min', moods: ['normal', 'tired', 'sore'],
@@ -360,8 +350,9 @@ const rules = [
   { icon: 'arrows', title: '2+ days between Back and Legs', text: 'Both load the lower back.' },
   { icon: 'separate', title: 'Chest and Shoulders not back to back', text: 'Presses tire the front of the shoulder.' },
   { icon: 'ban', title: 'No Intervals the day after Legs or padel', text: 'Tired legs raise the risk of strains.' },
-  { icon: 'gauge', title: 'Max two hard days in a row', text: 'Padel counts as hard. Then easy or rest.' },
+  { icon: 'gauge', title: 'Max two hard days in a row', text: 'Padel counts as hard. Shoulders is a medium day.' },
   { icon: 'bed', title: 'One full rest day every week', text: 'No training. A walk is fine.' },
+  { icon: 'repeat', title: 'Missed a day?', text: 'Just do the next session in the order.' },
   { icon: 'racket', title: 'Padel twice this week?', text: 'Skip Long easy. Keep Intervals.' }
 ];
 
@@ -372,40 +363,55 @@ const habits = [
   { icon: 'egg', value: '1.6 g/kg', label: 'protein, daily' }
 ];
 
-const topics = {
-  knees: { icon: 'bone', label: 'Knees' },
-  run: { icon: 'feet', label: 'Running' },
-  heart: { icon: 'heart', label: 'Heart' },
-  mobility: { icon: 'rotate', label: 'Mobility' },
-  padel: { icon: 'racket', label: 'Padel' },
-  recovery: { icon: 'repeat', label: 'Recovery' }
-};
-
-const tips = [
-  { topic: 'knees', title: 'Strength protects joints', text: 'Strength training cuts sports injuries by about two thirds. Stretching alone shows no clear effect.' },
-  { topic: 'knees', title: 'Free your ankles', text: 'Stiff ankles send stress up into the knee.' },
-  { topic: 'knees', title: 'Knees over toes is fine', text: 'With control, it is normal and needed in padel. Train it, do not avoid it.' },
-  { topic: 'knees', title: 'The 3/10 pain rule', text: 'Pain up to 3 out of 10 is OK if it is gone the next morning. Worse the next day? Do less.' },
-  { topic: 'run', title: 'Running is good for knees', text: 'Normal runners get less knee arthritis than people who do not exercise.' },
-  { topic: 'run', title: 'Restart slowly', text: 'After a break, start with 20–30 min easy. Add about 10% per week. Tendons adapt slower than muscles.' },
-  { topic: 'run', title: 'Shorter, quicker steps', text: '5–10% more steps per minute means less load on the knee.' },
-  { topic: 'run', title: 'Avoid the middle', text: 'Most people run every run kind of hard. Make easy days easier and hard days harder.' },
-  { topic: 'heart', title: 'Know your real max', text: 'Use the highest heart rate from a real hard effort. "220 minus age" is often wrong by 10+ beats.' },
-  { topic: 'heart', title: 'Walking is the base, not the workout', text: 'Lots of easy movement is great. But VO2max only goes up with hard work, so keep the Intervals.' },
-  { topic: 'heart', title: 'Measure it', text: 'Retest a 5k or one interval session every 8–12 weeks.' },
-  { topic: 'heart', title: 'Check the basics', text: 'Blood pressure and blood lipids (ApoB) every 1–2 years.' },
-  { topic: 'mobility', title: 'Daily 10 minutes', text: 'Ankle rocks, 90/90 hips, open books for the upper back, wrist circles, dead hang.' },
-  { topic: 'mobility', title: 'Strength through full range', text: 'Deep squats, split squats and slow full reps build mobility you can actually use.' },
-  { topic: 'mobility', title: 'Stretch at the right time', text: 'Before training, keep it moving. Long holds go after training or in the evening.' },
-  { topic: 'mobility', title: 'Padel is one-sided', text: 'Rotate and stretch both sides. Train the weak side too.' },
-  { topic: 'padel', title: 'Warm up 10 minutes', text: 'Most padel injuries happen when cold: calf, ankle, elbow.' },
-  { topic: 'padel', title: 'Strong forearms', text: 'Wrist and grip work protects the elbow.' },
-  { topic: 'recovery', title: 'Same sleep times', text: 'Go to bed and wake up within about 30 min every day. Regular sleep matters as much as long sleep.' },
-  { topic: 'recovery', title: 'Break long sitting', text: 'Stand up and move every 30–60 min. It helps blood sugar and the back.' },
-  { topic: 'recovery', title: 'Steady, not spiky', text: 'Big jumps after quiet weeks raise injury risk. Keep weekly load similar.' },
-  { topic: 'recovery', title: 'HRV is a trend', text: 'Judge it over 7 days, not one morning.' },
-  { topic: 'recovery', title: 'Easy week every 5–6 weeks', text: 'Same sessions, half the sets.' },
-  { topic: 'recovery', title: 'Busy week minimum', text: 'Legs, one upper day, Intervals, Long easy. This keeps most of the benefit.' }
+const notes = [
+  {
+    icon: 'bone', title: 'Knees', items: [
+      ['Strength protects joints', 'Strong muscles protect knees better than stretching.'],
+      ['Free your ankles', 'Stiff ankles push stress into the knees.'],
+      ['Knees over toes is OK', 'Do it slowly and with control. Padel needs it.'],
+      ['The pain rule', 'Up to 3 out of 10 is OK if it is gone the next morning. Worse the next day? Do less.']
+    ]
+  },
+  {
+    icon: 'feet', title: 'Running', items: [
+      ['Running is good for knees', 'Normal runners have healthier knees than people who sit a lot.'],
+      ['Start slow after a break', '20–30 min easy. Then add about 10% each week.'],
+      ['Small, quick steps', 'A few more steps per minute means less load on the knee.'],
+      ['Easy or hard, not in between', 'Easy: you can talk. Hard: only a few words.']
+    ]
+  },
+  {
+    icon: 'heart', title: 'Heart', items: [
+      ['Find your real max heart rate', 'Use your highest number from a very hard effort. Age formulas are often wrong.'],
+      ['Walking is not enough', 'Walking builds the base. Only hard intervals raise your fitness ceiling.'],
+      ['Test every 2–3 months', 'Run a 5k, or repeat the same interval session.'],
+      ['Check with a doctor', 'Blood pressure and blood fats (ApoB), every 1–2 years.']
+    ]
+  },
+  {
+    icon: 'rotate', title: 'Mobility', items: [
+      ['10 minutes a day', 'Ankles, hips, upper back, wrists, dead hang.'],
+      ['Strength through full range', 'Deep, slow reps give you mobility you can use.'],
+      ['When to stretch', 'Before training: just move. Long stretches: after training or at night.'],
+      ['Both sides', 'Padel is one-sided. Stretch and train both sides.']
+    ]
+  },
+  {
+    icon: 'racket', title: 'Padel', items: [
+      ['Warm up 10 minutes', 'Most injuries happen when cold: calf, ankle, elbow.'],
+      ['Strong forearms', 'Grip and wrist work protect the elbow.']
+    ]
+  },
+  {
+    icon: 'repeat', title: 'Recovery', items: [
+      ['Same sleep times', 'Go to bed and wake up at the same time, within 30 min.'],
+      ['Stand up often', 'When you sit, move every 30–60 min.'],
+      ['No big jumps', 'Keep each week close to the last one.'],
+      ['HRV: look at the week', 'One bad morning means little. A bad week means rest.'],
+      ['Easy week', 'Every 5–6 weeks, do half the sets.'],
+      ['Busy week', 'Only do Legs, one upper day, Intervals and Long easy.']
+    ]
+  }
 ];
 
 const TYPES = { strength: 'Strength', cardio: 'Cardio', recovery: 'Recovery' };
@@ -429,6 +435,7 @@ function expandable(id, head, body) {
 function renderSessions() {
   $('#sessions').innerHTML = sessions.map((s, i) => `
     <article class="card ${s.type}" data-moods="${s.moods.join(' ')}">
+      <span class="step">${String(i + 1).padStart(2, '0')}</span>
       ${expandable(`session-${i}`, `
         <span class="tile">${icon(s.icon)}</span>
         <span><small>${TYPES[s.type]} · ${s.time}</small><strong>${s.name}</strong>${meter(s.load)}</span>`, `
@@ -441,13 +448,14 @@ function renderSessions() {
     </article>`).join('');
 }
 
-function renderTips(topic = 'all') {
-  $('#tips').innerHTML = tips
-    .filter((t) => topic === 'all' || t.topic === topic)
-    .map((t, i) => `
-      <article class="tip">
-        ${expandable(`tip-${i}`, `<span class="tile">${icon(topics[t.topic].icon)}</span><strong>${t.title}</strong>`, `<p>${t.text}</p>`)}
-      </article>`).join('');
+function renderNotes() {
+  $('#notes').innerHTML = notes.map((n, i) => `
+    <article class="note">
+      ${expandable(`note-${i}`, `
+        <span class="tile">${icon(n.icon)}</span>
+        <span><strong>${n.title}</strong><small>${n.items.length} tips</small></span>`, `
+        <ul>${n.items.map(([title, text]) => `<li><b>${title}</b><span>${text}</span></li>`).join('')}</ul>`)}
+    </article>`).join('');
 }
 
 function setMood(id) {
@@ -464,11 +472,8 @@ function setMood(id) {
 $('#moods').innerHTML = moods.map((m) => `<button class="mood-btn" data-mood="${m.id}" aria-pressed="false">${icon(m.icon)}${m.label}</button>`).join('');
 $('#rules').innerHTML = rules.map((r) => `<div class="rule"><span class="tile">${icon(r.icon)}</span><div><b>${r.title}</b><span>${r.text}</span></div></div>`).join('');
 $('#habits').innerHTML = habits.map((h) => `<div class="habit">${icon(h.icon)}<b>${h.value}</b><small>${h.label}</small></div>`).join('');
-$('#tabs').innerHTML = [['all', 'grid', 'All'], ...Object.entries(topics).map(([k, t]) => [k, t.icon, t.label])]
-  .map(([k, ic, label], i) => `<button class="tab" role="tab" data-topic="${k}" aria-selected="${i === 0}">${k === 'all' ? '' : icon(ic)}${label}</button>`).join('');
-
 renderSessions();
-renderTips();
+renderNotes();
 setMood(null);
 
 let mood = null;
@@ -477,13 +482,6 @@ $('#moods').addEventListener('click', (e) => {
   if (!btn) return;
   mood = mood === btn.dataset.mood ? null : btn.dataset.mood;
   setMood(mood);
-});
-
-$('#tabs').addEventListener('click', (e) => {
-  const tab = e.target.closest('.tab');
-  if (!tab) return;
-  document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t === tab));
-  renderTips(tab.dataset.topic);
 });
 
 document.addEventListener('click', (e) => {
